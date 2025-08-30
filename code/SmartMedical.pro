@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    databasemanager.cpp \
     doctorattendancewidget.cpp \
     doctorclient.cpp \
     doctorinformationdetail.cpp \
@@ -33,9 +34,10 @@ SOURCES += \
     patientregisterwidget.cpp \
     patientreportwidget.cpp \
     registerpanel.cpp \
+    uicontroller.cpp \
     userinfocard.cpp
-
 HEADERS += \
+    databasemanager.h \
     doctorattendancewidget.h \
     doctorclient.h \
     doctorinformationdetail.h \
@@ -52,6 +54,7 @@ HEADERS += \
     patientregisterwidget.h \
     patientreportwidget.h \
     registerpanel.h \
+    uicontroller.h \
     userinfocard.h
 
 FORMS += \

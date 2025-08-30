@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <QDate>
 
 class DatabaseManager : public QObject
 {
@@ -58,53 +59,53 @@ public:
     QSqlDatabase database() const;
 
     // --- 高级查询接口 ---
-    
+
     /**
      * @brief 根据科室获取医生列表
-     * 
+     *
      * @param department 科室名称
      * @return ResultSet 医生信息结果集
      */
     ResultSet getDoctorsByDepartment(const QString& department);
-    
+
     /**
      * @brief 获取患者的预约信息
-     * 
+     *
      * @param patientId 患者ID
      * @param date 查询日期（为空则查询所有）
      * @return ResultSet 预约信息结果集
      */
     ResultSet getPatientAppointments(int patientId, const QDate& date = QDate());
-    
+
     /**
      * @brief 获取医生的排班信息
-     * 
+     *
      * @param doctorId 医生ID
      * @param date 查询日期
      * @return ResultSet 排班信息结果集
      */
     ResultSet getDoctorSchedule(const QString& doctorId, const QDate& date);
-    
+
     /**
      * @brief 检查医生在指定时间是否可预约
-     * 
+     *
      * @param doctorId 医生ID
      * @param dateTime 预约时间
      * @return bool 是否可预约
      */
     bool isTimeSlotAvailable(const QString& doctorId, const QDateTime& dateTime);
-    
+
     /**
      * @brief 获取患者的病历记录
-     * 
+     *
      * @param patientId 患者ID
      * @return ResultSet 病历记录结果集
      */
     ResultSet getPatientMedicalRecords(int patientId);
-    
+
     /**
      * @brief 获取聊天历史记录
-     * 
+     *
      * @param user1Id 用户1 ID
      * @param user2Id 用户2 ID
      * @param limit 限制条数（默认50条）

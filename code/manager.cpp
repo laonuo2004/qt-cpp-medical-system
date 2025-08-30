@@ -7,7 +7,7 @@ Manager::Manager(QWidget *parent) :
     ui(new Ui::Manager)
 {
     ui->setupUi(this);
-    connect(ui->LogoutBtn, &QPushButton::clicked, Engine::instance(), &Engine::Login);
+    connect(ui->LogoutBtn, &QPushButton::clicked, Engine::instance(), &Engine::startApplicationFlow);
 }
 
 Manager::~Manager()

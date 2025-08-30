@@ -27,7 +27,7 @@ PatientClient::PatientClient(QWidget *parent) :
     connect(ui->InfoBtn, &QPushButton::clicked, [this](){ui->stackedWidget->setCurrentIndex(0);});
     connect(ui->RegisterBtn, &QPushButton::clicked, [this](){ui->stackedWidget->setCurrentIndex(1);});
     connect(ui->ReportBtn, &QPushButton::clicked, [this](){ui->stackedWidget->setCurrentIndex(2);});
-    connect(ui->LogoutBtn, &QPushButton::clicked, Engine::instance(), &Engine::Login);
+    connect(ui->LogoutBtn, &QPushButton::clicked, Engine::instance(), &Engine::startApplicationFlow);
 }
 
 PatientClient::~PatientClient()

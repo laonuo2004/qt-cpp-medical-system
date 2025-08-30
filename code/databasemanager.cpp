@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QDir>
-
+#include <QDate>
 
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
 {
@@ -283,7 +283,7 @@ DatabaseManager& DatabaseManager::instance()
     bool DatabaseManager::createTables()
     {
         // 开始事务批量创建表
-        if (!beginTransaction()) 
+        if (!beginTransaction())
         {
             return false;
         }
@@ -301,7 +301,7 @@ DatabaseManager& DatabaseManager::instance()
         )");
 
         // 2. 管理员表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS admins (
@@ -313,7 +313,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 3. 患者表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS patients (
@@ -334,7 +334,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 4. 医生表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS doctors (
@@ -357,7 +357,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 5. 预约表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS appointments (
@@ -375,7 +375,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 6. 病历表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS medical_records (
@@ -390,7 +390,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 7. 住院表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS hospitalizations (
@@ -408,7 +408,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 8. 处方表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS prescriptions (
@@ -422,7 +422,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 9. 药品表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS drugs (
@@ -438,7 +438,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 10. 聊天消息表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS chat_messages (
@@ -454,7 +454,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 11. 病历模板表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS case_templates (
@@ -469,7 +469,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 12. 考勤表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS attendance (
@@ -485,7 +485,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 13. 请假申请表
-        if (success) 
+        if (success)
         {
             success = execute(R"(
                 CREATE TABLE IF NOT EXISTS leave_requests (
@@ -502,12 +502,12 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         // 根据事务结果提交或回滚
-        if (success) 
+        if (success)
         {
             success = commitTransaction();
             qDebug() << "数据库表结构创建/验证成功";
-        } 
-        else 
+        }
+        else
         {
             rollbackTransaction();
             qWarning() << "数据库表结构创建失败";
@@ -517,10 +517,10 @@ DatabaseManager& DatabaseManager::instance()
     }
 
     // --- 高级查询接口实现 ---
-    
+
     DatabaseManager::ResultSet DatabaseManager::getDoctorsByDepartment(const QString& department)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
@@ -528,23 +528,23 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         QString sql;
-        if (department.isEmpty()) 
+        if (department.isEmpty())
         {
             // 查询所有医生
             sql = R"(
-                SELECT d.doctor_id, d.full_name, d.sex, d.age, d.department, d.title, 
-                       d.phone_no, d.doc_start, d.doc_finish, d.registration_fee, 
+                SELECT d.doctor_id, d.full_name, d.sex, d.age, d.department, d.title,
+                       d.phone_no, d.doc_start, d.doc_finish, d.registration_fee,
                        d.patient_limit, d.photo_url, u.email
                 FROM doctors d
                 JOIN users u ON d.user_id = u.user_id
                 ORDER BY d.department, d.full_name
             )";
-        } 
-        else 
+        }
+        else
         {
             sql = QString(R"(
-                SELECT d.doctor_id, d.full_name, d.sex, d.age, d.department, d.title, 
-                       d.phone_no, d.doc_start, d.doc_finish, d.registration_fee, 
+                SELECT d.doctor_id, d.full_name, d.sex, d.age, d.department, d.title,
+                       d.phone_no, d.doc_start, d.doc_finish, d.registration_fee,
                        d.patient_limit, d.photo_url, u.email
                 FROM doctors d
                 JOIN users u ON d.user_id = u.user_id
@@ -558,7 +558,7 @@ DatabaseManager& DatabaseManager::instance()
 
     DatabaseManager::ResultSet DatabaseManager::getPatientAppointments(int patientId, const QDate& date)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
@@ -566,7 +566,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         QString sql = QString(R"(
-            SELECT a.appointment_id, a.appointment_date, a.appointment_time, 
+            SELECT a.appointment_id, a.appointment_date, a.appointment_time,
                    a.status, a.payment_status,
                    d.doctor_id, d.full_name as doctor_name, d.department, d.title,
                    d.registration_fee
@@ -575,7 +575,7 @@ DatabaseManager& DatabaseManager::instance()
             WHERE a.patient_id = %1
         )").arg(patientId);
 
-        if (date.isValid()) 
+        if (date.isValid())
         {
             sql += QString(" AND a.appointment_date = '%1'").arg(date.toString("yyyy-MM-dd"));
         }
@@ -587,7 +587,7 @@ DatabaseManager& DatabaseManager::instance()
 
     DatabaseManager::ResultSet DatabaseManager::getDoctorSchedule(const QString& doctorId, const QDate& date)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
@@ -595,7 +595,7 @@ DatabaseManager& DatabaseManager::instance()
         }
 
         QString sql = QString(R"(
-            SELECT a.appointment_time, a.status, 
+            SELECT a.appointment_time, a.status,
                    p.full_name as patient_name, p.phone_no as patient_phone
             FROM appointments a
             JOIN patients p ON a.patient_id = p.patient_id
@@ -608,7 +608,7 @@ DatabaseManager& DatabaseManager::instance()
 
     bool DatabaseManager::isTimeSlotAvailable(const QString& doctorId, const QDateTime& dateTime)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
@@ -618,7 +618,7 @@ DatabaseManager& DatabaseManager::instance()
         // 检查医生是否存在
         QString doctorCheckSql = QString("SELECT COUNT(*) FROM doctors WHERE doctor_id = '%1'").arg(doctorId);
         ResultSet doctorResult = query(doctorCheckSql);
-        if (doctorResult.empty() || doctorResult[0].begin()->second.toInt() == 0) 
+        if (doctorResult.empty() || doctorResult[0].begin()->second.toInt() == 0)
         {
             m_lastError = "医生不存在";
             return false;
@@ -626,15 +626,15 @@ DatabaseManager& DatabaseManager::instance()
 
         // 检查时间槽是否已被预约
         QString sql = QString(R"(
-            SELECT COUNT(*) 
-            FROM appointments 
-            WHERE doctor_id = '%1' 
-            AND appointment_time = '%2' 
+            SELECT COUNT(*)
+            FROM appointments
+            WHERE doctor_id = '%1'
+            AND appointment_time = '%2'
             AND status != 'cancelled'
         )").arg(doctorId).arg(dateTime.toString("yyyy-MM-dd hh:mm:ss"));
 
         ResultSet result = query(sql);
-        if (result.empty()) 
+        if (result.empty())
         {
             return false;
         }
@@ -644,7 +644,7 @@ DatabaseManager& DatabaseManager::instance()
 
     DatabaseManager::ResultSet DatabaseManager::getPatientMedicalRecords(int patientId)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
@@ -670,7 +670,7 @@ DatabaseManager& DatabaseManager::instance()
 
     DatabaseManager::ResultSet DatabaseManager::getChatHistory(int user1Id, int user2Id, int limit)
     {
-        if (!isConnected()) 
+        if (!isConnected())
         {
             m_lastError = "数据库未连接";
             emit errorOccurred(m_lastError);
